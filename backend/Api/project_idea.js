@@ -26,7 +26,7 @@ async function get_project_idea(history, languages, numbers_of_ideas) {
         ],
         model: "gpt-4o"
     });
-    console.log(completion.choices[0].message.content);
+    // console.log(completion.choices[0].message.content);
     return parse_to_json_find(completion.choices[0].message.content);
 }
 

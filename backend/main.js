@@ -8,6 +8,7 @@ const router_user = require("./Router/user_router");
 const router_resume = require("./Router/extract_resume_router");
 const create_test = require("./Router/level_exam_router");
 const job_match_router = require("./Router/job_match_router");
+const project_router = require("./Router/project_idea_router");
 
 app.use(cors());
 app.use(express.json());
@@ -15,6 +16,7 @@ app.use("/user", router_user);
 app.use("/resume", router_resume);
 app.use("/test", create_test);
 app.use("/job_match", job_match_router);
+app.use("/project", project_router);
 
 const port = process.env["PORT"] || 8000;
 app.listen(port, () => {
