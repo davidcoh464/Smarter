@@ -7,18 +7,18 @@ const answer_format = `The extracted text should be in the following JSON format
     "personal_information": {
         "name": "",
         "phone_number": "",
-        "linkedin": "",
-        "github": "",
+        "address": "",
         "email": "",
-        "address": ""
+        "linkedin": "",
+        "github": ""
     },
     "technical_skills": {
-        "languages": "<e.g., Python, Java, JavaScript, C++>",
-        "frameworks_and_technologies": "<e.g., WPF, Pandas, Numpy, Spring Boot, TensorFlow, Git, Docker, AWS>"
+        "languages": "<e.g., Python, Java, C++>",
+        "frameworks_and_technologies": "<e.g., WPF, Pandas, Numpy, Opencv, TensorFlow, Git, Docker, AWS>",
         "languages_rank": [{ language: <The programming language>, rank: <The estimated level of knowledge that the user seems to know, rated between 1-10> }]
     },
     "resume": {
-        "resume_summary": "<Summary of the entire resume>"
+        "resume_summary": "<Summary of the entire resume that relevant to a software development position>"
     }
 }
 """
