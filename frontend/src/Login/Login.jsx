@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import './loginStyle.css';
+import { userLogin } from '../Api/UtilsService';
 
 function Login() {
     const [formData, setFormData] = useState({ email: '', password: '' });
@@ -17,7 +18,9 @@ function Login() {
     const handleLogin = (e) => {
         e.preventDefault();
         console.log('Form data:', formData);
-        // Add your login logic here
+        userLogin(formData.email, formData.password)
+            .then((data) => console.log(data))
+            .catch((err) => console.error(err));
     };
 
     return (

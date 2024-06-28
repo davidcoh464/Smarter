@@ -2,6 +2,7 @@ import axios from 'axios';
 
 const BASE_URL = "http://localhost:8000";
 const USER_URL = `${BASE_URL}/user`;
+const USER_LOGIN_URL = `${USER_URL}/login`
 const RESUME_URL = `${BASE_URL}/resume`;
 const TEST_URL = `${BASE_URL}/test`;
 const JOB_MATCH_URL = `${BASE_URL}/job_match`;
@@ -22,7 +23,14 @@ const createUser = async (userData) => {
     }
 };
 
-
+const userLogin = async (email, password) => {
+    try {
+        const response = await axios.post(`${USER_LOGIN_URL}/`, { email, password });
+        return handleResponse(response);
+    } catch (error) {
+        handleError(error);
+    }
+};
 
 const getAllUsers = async () => {
     try {
@@ -104,6 +112,7 @@ const getProjectIdeas = async (user_id, languages, number_of_ideas) => {
 
 export {
     createUser,
+    userLogin,
     getAllUsers,
     getUserById,
     updateUserById,

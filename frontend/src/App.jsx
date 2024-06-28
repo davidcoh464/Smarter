@@ -3,7 +3,7 @@ import Login from "./Login/Login"
 import Navbar from "./Navbar"
 
 function App() {
-  const [is_register, set_is_register] = useState(true);
+  const [is_register, set_is_register] = useState(false);
   useEffect(() => {
     if (localStorage.getItem("user_id")) {
       set_is_register(true);
