@@ -31,6 +31,27 @@ router.get('/', async (req, res) => {
     }
 });
 
+// User login
+router.post('/login', async (req, res) => {
+    try {
+        const { email, password } = req.body;
+        if (!email || !password) {
+            return res.status(400).send({ error: "Email and password are required" });
+        }
+
+        const user = await user_service.getByEmail(email);
+        if (!user) {
+            return res.status(400).send({ error: "Incorrect email" });
+        } else if (user.personal_information.password !== password) {
+            return res.status(400).send({ error: "Incorrect password" });
+        } else {
+            res.status(200).send(user);
+        }
+    } catch (error) {
+        res.status(500).send({ error: error.message });
+    }
+});
+
 // Get a user by ID
 router.get('/:id', validateObjectId, async (req, res) => {
     try {
