@@ -1,5 +1,4 @@
-const openai = require("./open_ai_instance")
-const { parse_to_json_find } = require("./json_parser")
+const { get_openai_result } = require("./open_ai_result");
 
 const answer_format = `Each question should have four options and should be in this format:
 """
@@ -17,15 +16,14 @@ Do not include any additional explanations, only provide the questionnaire in a 
 
 
 async function get_test(history, language, level) {
-  const completion = await openai.chat.completions.create({
-    messages: [
-      { role: "system", content: "You are a helpful questionnaires creator." },
-      { role: "user", content: `Based on the following user history: ${history}\nProvide 10 multiple-choice questions about ${language}, for level ${level} out of 5. ${answer_format}` }
-    ],
-    model: "gpt-4o"
-  });
-  console.log(completion.choices[0].message.content)
-  return parse_to_json_find(completion.choices[0].message.content);
+  system_content = "You are a helpful questionnaires creator."
+  user_content = `Based on the following user history: ${history}\nProvide 10 multiple-choice questions about ${language}, for level ${level} out of 10. ${answer_format}`;
+
+  try {
+    return get_openai_result(system_content, user_content)
+  } catch (error) {
+    throw new Error("Error get test:", error);
+  }
 }
 
 

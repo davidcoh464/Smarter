@@ -1,5 +1,4 @@
-const openai = require("./open_ai_instance");
-const { parse_to_json_find } = require("./json_parser");
+const { get_openai_result } = require("./open_ai_result");
 
 const answer_format = `The extracted text should be in the following JSON format:
 """
@@ -25,26 +24,22 @@ const answer_format = `The extracted text should be in the following JSON format
 Do not include any additional explanations, only provide the extracted text in JSON format.
 `;
 
-function is_url_valid(string) {
-    try {
-        new URL(string);
-        return true;
-    } catch (err) {
-        return false;
-    }
-}
 
 async function extract_resume_information(resume_text) {
     try {
-        const completion = await openai.chat.completions.create({
-            messages: [
-                { role: "system", content: "You are a helpful tool for extracting information from resumes." },
-                { role: "user", content: `Extract the following information from the resume:\n${resume_text}\n${answer_format}` }
-            ],
-            model: "gpt-4o"
-        });
+        const system_content = "You are a helpful tool for extracting information from resumes.";
+        const user_content = `Extract the following information from the resume:\n${resume_text}\n${answer_format}`;
 
-        let resume_info = parse_to_json_find(completion.choices[0].message.content);
+        let resume_info = await get_openai_result(system_content, user_content);
+
+        const is_url_valid = (string) => {
+            try {
+                new URL(string);
+                return true;
+            } catch {
+                return false;
+            }
+        }
 
         if (resume_info?.personal_information?.linkedin && !is_url_valid(resume_info.personal_information.linkedin)) {
             resume_info.personal_information.linkedin = "";
@@ -53,27 +48,24 @@ async function extract_resume_information(resume_text) {
             resume_info.personal_information.github = "";
         }
 
-        Object.keys(resume_info.personal_information).forEach((key) => {
+        // Clean up empty keys in personal_information
+        for (const key in resume_info.personal_information) {
             if (!resume_info.personal_information[key]) {
                 delete resume_info.personal_information[key];
             }
-        });
+        }
 
-        Object.keys(resume_info.technical_skills).forEach((key) => {
+        // Clean up empty keys in technical_skills
+        for (const key in resume_info.technical_skills) {
             if (!resume_info.technical_skills[key]) {
                 delete resume_info.technical_skills[key];
             }
-        });
+        }
 
         return resume_info;
 
     } catch (error) {
-        console.error("Error extracting resume information:", error);
-        return {
-            "personal_information": {},
-            "technical_skills": {},
-            "resume": {}
-        };
+        throw new Error("Error extracting resume information:", error);
     }
 }
 

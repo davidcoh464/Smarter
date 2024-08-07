@@ -1,5 +1,4 @@
-const openai = require("./open_ai_instance");
-const { parse_to_json_find } = require("./json_parser");
+const { get_openai_result } = require("./open_ai_result");
 
 const answer_format = `The ideas should be in this format:
 """
@@ -18,16 +17,14 @@ const answer_format = `The ideas should be in this format:
 Do not include any additional explanations, only provide the ideas in a JSON format.
 `;
 
-async function get_project_idea(history, languages, numbers_of_ideas) {
-    const completion = await openai.chat.completions.create({
-        messages: [
-            { role: "system", content: "You are a helpful project ideas creator." },
-            { role: "user", content: `Based on the following user history: ${history}\nCreate ${numbers_of_ideas} ideas for projects using the following languages: ${languages} (in all projects). ${answer_format}` }
-        ],
-        model: "gpt-4o"
-    });
-    // console.log(completion.choices[0].message.content);
-    return parse_to_json_find(completion.choices[0].message.content);
+async function get_project_idea(history, languages, number_of_ideas) {
+    const system_content = "You are a helpful project ideas creator.";
+    const user_content = `Based on the following user history: ${history}\nCreate ${number_of_ideas} ideas for projects using the following languages: ${languages} (in all projects). ${answer_format}`;
+    try{
+        return get_openai_result(system_content, user_content);
+    }catch (error) {
+        throw new Error("Error get project idea:", error);
+    }
 }
 
 module.exports = {
