@@ -1,4 +1,25 @@
 const User = require("../Model/users_model");
+const bcrypt = require('bcrypt');
+
+async function getHashPassword(password) {
+    const saltRounds = 10;
+    try {
+        const hash = await bcrypt.hash(password, saltRounds);
+        return hash;
+    } catch (err) {
+        throw new Error('Error hashing password');
+    }
+}
+
+async function comparePassword(non_hash_password, hash_password) {
+    try {
+        const result = await bcrypt.compare(non_hash_password, hash_password);
+        return result;
+    } catch (err) {
+        throw new Error('Error comparing passwords');
+    }
+}
+
 
 async function getAll() {
     return User.find({});
@@ -26,6 +47,14 @@ async function update(id, updates) {
         if (existingUser && existingUser._id.toString() !== id) {
             throw new Error("Email already in use by another user.");
         }
+    }
+
+    if (updates.personal_information && updates.personal_information.password) {
+        const isSamePassword = await comparePassword(updates.personal_information.password, user.personal_information.password);
+        if (!isSamePassword) {
+            user.personal_information.password = await getHashPassword(updates.personal_information.password);
+        }
+        delete updates.personal_information.password;
     }
 
     Object.keys(updates).forEach((update) => {
@@ -59,7 +88,7 @@ async function create(new_user) {
     if (existingUser) {
         throw new Error("Email already in use.");
     }
-
+    new_user.personal_information.password = await getHashPassword(new_user.personal_information.password);
     new_user.resume = new_user.resume || {};
     new_user.technical_skills = new_user.technical_skills || {};
     new_user.recommendations = new_user.recommendations || {};
