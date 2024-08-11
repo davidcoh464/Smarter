@@ -14,11 +14,23 @@ async function get_project_idea(user_id, languages, number_of_ideas) {
     number_of_ideas = number_of_ideas || 1;
 
     const history = JSON.stringify({
-        resume_summary: user.resume.resume_summary,
-        technical_skills: user.technical_skills
+        resume_summary: user?.resume?.resume_summary,
+        technical_skills: user?.technical_skills
     });
 
-    return await project_idea.get_project_idea(history, languages, number_of_ideas);
+    try {
+        const p_ideas = await project_idea.get_project_idea(history, languages, number_of_ideas);
+        
+        if (!Array.isArray(p_ideas)) {
+            throw new Error(`Expected an array of project ideas, but received: ${typeof p_ideas}\nProject idea: ${p_ideas}`);
+        }
+
+        user.recommendations.projects.push(...p_ideas);
+        await user.save();
+        return p_ideas;
+    } catch (err) {
+        throw new Error(`An error occurred while fetching project ideas: ${err.message}`);
+    }
 }
 
 module.exports = { get_project_idea };
