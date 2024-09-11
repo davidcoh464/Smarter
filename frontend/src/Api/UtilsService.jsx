@@ -9,11 +9,13 @@ const READ_RESUME_URL = `${RESUME_URL}/read`;
 const TEST_URL = `${BASE_URL}/test`;
 const JOB_MATCH_URL = `${BASE_URL}/job_match`;
 const PROJECT_URL = `${BASE_URL}/project`;
+const STUDY_URL = `${BASE_URL}/study`;
 
 const handleResponse = (response) => response.data;
 
 const handleError = (error) => {
-    const errorMessage = error.response?.data?.error || 'An unexpected error occurred';
+    console.error("Error:", error);  // Log the full error for debugging.
+    const errorMessage = error.response?.data?.error || error.message || 'An unexpected error occurred';
     throw new Error(errorMessage);
 };
 
@@ -128,6 +130,15 @@ const getProjectIdeas = async (user_id, languages, number_of_ideas) => {
     }
 };
 
+const getToolLearning = async (user_id, job_title) => {
+    try {
+        const response = await axios.post(`${STUDY_URL}/${user_id}`, { job_title });
+        return handleResponse(response);
+    } catch (error) {
+        return handleError(error);
+    }
+};
+
 export {
     createUser,
     userLogin,
@@ -139,5 +150,6 @@ export {
     readResume,
     getJobMatch,
     getTest,
-    getProjectIdeas
+    getProjectIdeas,
+    getToolLearning
 };
